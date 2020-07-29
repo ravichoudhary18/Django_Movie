@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import ListView,DetailView
 # Create your views here.
-from .models import Movie
+from .models import Movie, links
 
 class movieList(ListView):
     model = Movie
@@ -12,3 +12,14 @@ class movieList(ListView):
 class movieDetail(DetailView):
     model = Movie
     # template_name=''
+
+    def get_object(self):
+        object = super(movieDetail, self).get_object()
+        object.views_count = object.views_count +1 
+        object.save()
+        return object
+    
+    def get_context_data(self,**kwargs):
+        context = super(movieDetail,self).get_context_data(**kwargs)
+        context['linkss'] = links.objects.filter(movie = self.get_object())
+        return context
